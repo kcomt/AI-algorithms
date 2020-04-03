@@ -26,6 +26,17 @@ def succesor(possible,h):
         if h[possible[i]] < minimum:
             nextNode = possible[i]
             minimum = h[i] 
-    return nextNode
+        return nextNode
 
+#[NODE, WEIGHT]
+peso=[
+[[1,4],[2,5]],
+[[4,6],[3,3]],
+[3,4],
+[[4,1],[5,3]],
+[[5,4]]
+]
+
+def A*(start,paths,h,g,found,foundPath):
+    
 print(bestFirstSearch(0,paths,h,found,foundPath))
