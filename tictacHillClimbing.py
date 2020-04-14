@@ -10,32 +10,9 @@ def printBoard(arr):
     for i in range(0, len(columns)):
         print(columns[i])
 
-#checks if there is a winner to leave loop
-def checkForWinner(arr):
-    #check horizontally
-    for i in range(0,len(arr),3):
-        if arr[i] == arr[i+1] and arr[i] == arr[i+2] and arr[i+1] == arr[i+2]:
-            return True
-
-    #check vertically
-    for i in range(0,3):
-        if arr[i] == arr[i+3] and arr[i] == arr[i+6] and arr[i+3] == arr[i+6]:
-            return True
-            
-    #check diagnolaly
-    for i in range(0,3,2):
-        if i == 0:
-            if arr[i] == arr[i+4] and arr[i] == arr[i+8] and arr[i+4] == arr[i+8]:
-                return True
-        
-        if i == 2:
-            if arr[i] == arr[i+2] and arr[i] == arr[i+4] and arr[i+2] == arr[i+4]:
-                return True
-
-#checks to see whats the heuristic function (its worth)
-def findf(arr, char):
+#checks to see whats the heuristic function (its value)
+def checkForWinner(arr, char):
     f = 0
-
     #check horizontally
     for i in range(0,len(arr),3):
         aux = 0
@@ -86,6 +63,45 @@ def findf(arr, char):
     
     return f
 
+#checks for possible win lines
+def checkPossibleWinLines(arr,char):
+    number = 0
+
+    #check horizontal win lines
+    for i in range(0,len(arr),3):
+        aux = 0
+        if arr[i] != char and arr[i+1] != char and arr[i+2] != char:
+            number += 1
+    
+    #check vertical win lines
+    for i in range(0,3):
+        if arr[i] != char and arr[i+3] != char and arr[i+6] != char:
+            number += 1
+
+
+    #check diagnolal win lines
+    for i in range(0,3,2):
+        if i == 0:
+            if arr[i] != char and arr[i+4] != char and arr[i+8] != char:
+                number += 1
+        
+        if i == 2:
+            if arr[i] != char and arr[i+2] != char and arr[i+4] != char:
+                number += 1
+    
+    return number
+
+def findF(arr,char):
+    if char == "x":
+        charAI = "o"
+    else:
+        charAI = "x"
+    
+    posPlayer = checkPossibleWinLines(arr,charAI)
+    posAI = checkPossibleWinLines(arr,char)
+
+    return posPlayer-posAI
+
 #find positions left
 def findPositionsLeft(arr):
     positionsLeft = []
@@ -97,6 +113,7 @@ def findPositionsLeft(arr):
 def play(arr,char,winner):
     while not winner:
         positionsLeft = findPositionsLeft(arr)
+        # if player picks x, he goes first, else computer goes first
         if char == "x":
             #player plays
             print("\nPositions that are left: ")
@@ -105,11 +122,11 @@ def play(arr,char,winner):
             posi = int(posi)
             arr[posi] = "x"
             printBoard(arr)
-            print(findf(arr,"x"))
-            if findf(arr,"x") >= 3:
+
+            if checkForWinner(arr,"x") >= 3:
                 winner = True
                 print("\nHas ganado la partida!")
-                return
+
             else:
                 #player hasnt won so computer plays
                 positionsLeft = findPositionsLeft(arr)
@@ -120,33 +137,76 @@ def play(arr,char,winner):
                     aux[positionsLeft[i]] = "o"
                     possibleStates.append(aux)
             
+                #Array of positions that would be placed and their respective f
+                ranking = []
+                for i in range(0, len(positionsLeft)):
+                    aux = []
+                    aux.append(positionsLeft[i])
+                    aux.append(findF(possibleStates[i],"x"))
+                    ranking.append(aux)
+
+                #find most f and make it the current state
+                mini = ranking[0][1]
+                arr = possibleStates[0]
+            
+                for i in range(0, len(ranking)):
+                    if mini > ranking[i][1]:
+                        mini = ranking[i][1]
+                        arr = possibleStates[i]
+                
+                #Show the player that the AI has played
+                print("\nLa computadora ha jugado: ")
+                printBoard(arr)
+
+                if checkForWinner(arr,"o") >= 3:
+                    winner = True
+                    print("La computadora ha ganado")
+            
+        else:
+            positionsLeft = findPositionsLeft(arr)
+            possibleStates = []
+            for i in range(0, len(positionsLeft)):
+                aux = []
+                aux = arr.copy()
+                aux[positionsLeft[i]] = "x"
+                possibleStates.append(aux)
+            
             #Array of positions that would be placed and their respective f
             ranking = []
             for i in range(0, len(positionsLeft)):
                 aux = []
                 aux.append(positionsLeft[i])
-                aux.append(findf(possibleStates[i],"o"))
+                aux.append(findF(possibleStates[i],"o"))
                 ranking.append(aux)
 
             #find most f and make it the current state
-            maxi = ranking[0][1]
+            mini = ranking[0][1]
             arr = possibleStates[0]
-        
-            for i in range(0, len(ranking)):
-                if maxi < ranking[i][1]:
-                    maxi = ranking[i][1]
-                    arr = possibleStates[i]
             
+            for i in range(0, len(ranking)):
+                if mini > ranking[i][1]:
+                    mini = ranking[i][1]
+                    arr = possibleStates[i]
+                
             #Show the player that the AI has played
             print("\nLa computadora ha jugado: ")
             printBoard(arr)
 
-            if maxi >=3 :
+            if checkForWinner(arr,"x") >= 3:
                 winner = True
                 print("La computadora ha ganado")
-            
-        else:
-            print("es igual a o")
+            else:
+                #computer hasnt won so player playss
+                print("\nPositions that are left: ")
+                print(positionsLeft)
+                posi = input('\nWhere do you want to put?: ')
+                posi = int(posi)
+                arr[posi] = "o"
+                printBoard(arr)
+
+                if checkForWinner(arr,"o") >= 3:
+                    winner = True
+                    print("\nHas ganado la partida!")
         
 board = [0,1,2,3,4,5,6,7,8]
 tictac = [" "," "," "," "," "," "," "," "," "]
