@@ -86,36 +86,71 @@ def findf(arr, char):
     
     return f
 
-def play(arr,char):
+#find positions left
+def findPositionsLeft(arr):
     positionsLeft = []
-    #find positions left
     for i in range(0, len(arr)):
-        if tictac[i] == " ":
+        if arr[i] == " ":
             positionsLeft.append(i)
+    return positionsLeft
 
-    if char == "x":
-        #player plays
+def play(arr,char,winner):
+    while not winner:
+        positionsLeft = findPositionsLeft(arr)
+        if char == "x":
+            #player plays
+            print("\nPositions that are left: ")
+            print(positionsLeft)
+            posi = input('\nWhere do you want to put?: ')
+            posi = int(posi)
+            arr[posi] = "x"
+            printBoard(arr)
 
-        print("\nPositions that are left: ")
-        print(positionsLeft)
-        posi = input('\nWhere do you want to put?: ')
-        posi = int(posi)
-        arr[posi] = "x"
-        printBoard(arr)
-
-        if findf(arr,"x") > 3:
-            print("\nHas ganado la partida!")
-        else:
-            #player hasnt won so computer plays
+            if findf(arr,"x") > 3:
+                winner = True
+                print("\nHas ganado la partida!")
+            else:
+                #player hasnt won so computer plays
+                positionsLeft = findPositionsLeft(arr)
+                possibleStates = []
+                for i in range(0, len(positionsLeft)):
+                    aux = []
+                    aux = arr.copy()
+                    aux[positionsLeft[i]] = "o"
+                    possibleStates.append(aux)
             
-    else:
-        print("es igual a o")
+            #Array of positions that would be placed and their respective f
+            ranking = []
+            for i in range(0, len(positionsLeft)):
+                aux = []
+                aux.append(positionsLeft[i])
+                aux.append(findf(possibleStates[i],"o"))
+                ranking.append(aux)
 
+            #find most f and make it the current state
+            maxi = ranking[0][1]
+            arr = possibleStates[0]
+        
+            for i in range(0, len(ranking)):
+                if maxi < ranking[i][1]:
+                    maxi = ranking[i][1]
+                    arr = possibleStates[i]
+            
+            #Show the player that the AI has played
+            print("\nLa computadora ha jugado: ")
+            printBoard(arr)
 
+            if maxi >=3 :
+                winner = True
+                print("La computadora ha ganado")
+            
+        else:
+            print("es igual a o")
+        
 board = [0,1,2,3,4,5,6,7,8]
 tictac = [" "," "," "," "," "," "," "," "," "]
 print("This is the board, and its respective positions: ")
 printBoard(board)
 char = input('\nWhat do you want to play as "x" or "o": ')
-play(tictac,char)
+play(tictac,char,False)
 
