@@ -77,9 +77,9 @@ def findf(arr, char):
             aux = 0
             if arr[i] == char:
                 aux = aux + 1
-            if arr[i+4] == char:
+            if arr[i+2] == char:
                 aux = aux + 1   
-            if arr[i+6] == char:
+            if arr[i+4] == char:
                 aux = aux + 1 
             if aux > f:
                 f = aux
@@ -105,10 +105,11 @@ def play(arr,char,winner):
             posi = int(posi)
             arr[posi] = "x"
             printBoard(arr)
-
-            if findf(arr,"x") > 3:
+            print(findf(arr,"x"))
+            if findf(arr,"x") >= 3:
                 winner = True
                 print("\nHas ganado la partida!")
+                return
             else:
                 #player hasnt won so computer plays
                 positionsLeft = findPositionsLeft(arr)
