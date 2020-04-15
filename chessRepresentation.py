@@ -12,6 +12,39 @@ class piece:
         self.name = name
         self.color = color
 
+    def validMove(self,posyFrom,posxFrom,posyTo,posxTo):
+
+        #validating if position where bishop wants to go is legal
+        if self.name == "bishop":
+            #validate if bishop will go NORTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom > posyTo:
+                if posxFrom - posxTo == posyFrom-posyTo:
+                    return True
+                else:
+                    return False
+            #validate if bishop will go SOUTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom < posyTo:
+                if posxTo - posxFrom == posyTo-posyFrom:
+                    return True
+                else:
+                    return False
+            #validate if bishop will go NORTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom > posyTo:
+                if posxTo - posxFrom == posyFrom-posyTo:
+                    return True
+                else:
+                    return False
+            #validate if bishop will go SOUTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom < posyTo:
+                if posxFrom - posxTo == posyTo-posyFrom:
+                    return True
+                else:
+                    return False
+            
+
+                
+
+
 class player:
     points = 0
     color = "white"
@@ -89,7 +122,7 @@ class board:
              ["00","00","00","00","00","00","00","00"], #5
              ["00","00","00","00","00","00","00","00"], #6
              ["00","00","00","00","00","00","00","00"]] #7
-            #0,1,2,3,4,5,6,7
+            #0,     1,   2,   3,    4,  5,    6,  7
     
     def __init__(self,playerWhite,playerBlack):
         for i in playerWhite.pieces:
@@ -139,13 +172,17 @@ class board:
 
         return posx,posy
 
-    def move(self,stringFrom,stringTo):
+    def move(self,piece,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
         posyTo, posyTo= self.transformToPos(stringTo)
-        
+
 human = player("white")
 computer = player("black")
 human.initializeBasedOnColor()
 computer.initializeBasedOnColor()
 chessboard = board(human,computer)
 chessboard.printBoard()
+
+bishop = piece(0,0,10,"bishop","white")
+print(bishop.validMove(5,7,7,5))
+
