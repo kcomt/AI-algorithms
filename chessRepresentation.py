@@ -1,10 +1,5 @@
 
 class piece:
-    posx = 0
-    posy = 0
-    value = 0
-    name  = "blank"
-    color = "blank"
     def __init__(self,posx,posy,value,name,color):
         self.posx = posx
         self.posy = posy
@@ -121,11 +116,9 @@ class piece:
         return False
 
 class player:
-    points = 0
-    color = "white"
-    pieces = []
-    
     def __init__(self,color):
+        self.points = 0
+        self.pieces = []
         self.color = color
 
     def initializeBasedOnColor(self):
@@ -182,11 +175,10 @@ class player:
             #add queen
             aux = piece(3,0,90,"queen","black")
             self.pieces.append(aux)
-            
+                
             #add king
             aux = piece(4,0,1000,"king","black")
             self.pieces.append(aux)
-          
 
 class board:
     board = [["00","00","00","00","00","00","00","00"], #0
@@ -198,10 +190,26 @@ class board:
              ["00","00","00","00","00","00","00","00"], #6
              ["00","00","00","00","00","00","00","00"]] #7
             #0,     1,   2,   3,    4,  5,    6,  7
-    
+
+    boardOfObjects = [["00","00","00","00","00","00","00","00"], #0
+             ["00","00","00","00","00","00","00","00"], #1
+             ["00","00","00","00","00","00","00","00"], #2
+             ["00","00","00","00","00","00","00","00"], #3
+             ["00","00","00","00","00","00","00","00"], #4
+             ["00","00","00","00","00","00","00","00"], #5
+             ["00","00","00","00","00","00","00","00"], #6
+             ["00","00","00","00","00","00","00","00"]] #7
+
+
     def __init__(self,playerWhite,playerBlack):
+        #initializes 2 board, one for printing and the other for keeping track of the pieces
         for i in playerWhite.pieces:
             self.board[i.posy][i.posx] = i.name[0] + i.color[0]
+            self.boardOfObjects[i.posy][i.posx] = i
+
+        for i in playerBlack.pieces:
+            self.board[i.posy][i.posx] = i.name[0] + i.color[0]
+            self.boardOfObjects[i.posy][i.posx] = i
 
     def printBoard(self):
         for i in self.board:
@@ -247,17 +255,28 @@ class board:
 
         return posx,posy
 
-    def move(self,piece,stringFrom,stringTo):
+    def checkToSeeIfPieceInWay(type,posyFrom,posxFrom,posyTo,posxTo):
+
+    def validateMove(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
-        posyTo, posyTo= self.transformToPos(stringTo)
+        posxTo, posyTo= self.transformToPos(stringTo)
+
+        #validates if position from From is a piece that is the same color of the turn and the piece
+        if self.boardOfObjects[posyFrom][posxFrom] != "00" and self.boardOfObjects[posyFrom][posxFrom].color == turn:
+            #validates if positions of TO is empty or has a piece of different color
+            if self.boardOfObjects[posyTo][posxTo] == "00" or self.boardOfObjects[posyTo][posxTo].color != turn:
+                print("funciona")
+
+
+
 
 human = player("white")
 computer = player("black")
+
 human.initializeBasedOnColor()
 computer.initializeBasedOnColor()
+
 chessboard = board(human,computer)
 chessboard.printBoard()
 
-bishop = piece(0,0,10,"king","black")
-print(bishop.validMove(3,4,3,6,"move"))
-
+chessboard.validateMove("white","c1","c2")
