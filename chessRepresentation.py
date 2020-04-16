@@ -12,10 +12,31 @@ class piece:
         self.name = name
         self.color = color
 
-    def validMove(self,posyFrom,posxFrom,posyTo,posxTo):
+    def validMove(self,posyFrom,posxFrom,posyTo,posxTo,typeOf):
+        #validate move of pawn
+        if self.name == "pawn":
+            if self.color == "black":
+                if typeOf == "move":
+                    if posyTo == posyFrom + 1 and posxTo == posxFrom:
+                        return True
+                    if posyFrom == 1 and posyTo == posyFrom  + 2 and posxTo == posxFrom:
+                        return True
+                else:
+                    if (posyTo == posyFrom + 1 and posxTo + 1 == posxFrom) or (posyTo == posyFrom + 1 and posxTo - 1 == posxFrom):
+                        return True
+            else:
+                if typeOf == "move":
+                    if posyTo + 1 == posyFrom and posxTo == posxFrom:
+                        return True
+                    if posyFrom == 6 and posyTo + 2 == posyFrom and posxTo == posxFrom:
+                        return True
+                else:
+                    if (posyTo + 1 == posyFrom and posxTo + 1 == posxFrom) or (posyTo + 1 == posyFrom and posxTo - 1 == posxFrom):
+                        return True
+            return False
 
-        #validating if position where bishop wants to go is legal
-        if self.name == "bishop":
+        #validating if position where bishop or queen wants to go is legal
+        if self.name == "bishop" or self.name == "queen":
             #validate if bishop will go NORTHWEST Diagnollay
             if posxFrom > posxTo and posyFrom > posyTo:
                 if posxFrom - posxTo == posyFrom-posyTo:
@@ -41,9 +62,63 @@ class piece:
                 else:
                     return False
             
+    #validate tower and queen towerish movement    
+        if self.name == "tower" or self.name == "queen":
+            if posxFrom == posxTo and posyFrom != posyTo:
+                return True
+            if posxFrom != posxTo and posyFrom == posyTo:
+                return True
+            return False
 
-                
+    #validate horse movement    
+        if self.name == "horse":
+            if posxFrom + 1 == posxTo and posyFrom + 3 == posyTo:
+                return True
+            if posxFrom + 3== posxTo and posyFrom + 1== posyTo:
+                return True
+            if posxFrom + 3 == posxTo and posyFrom == posyTo + 1:
+                return True
+            if posxFrom + 1 == posxTo and posyFrom == posyTo + 3:
+                return True
+            if posxFrom == posxTo + 1 and posyFrom == posyTo + 3:
+                return True
+            if posxFrom == posxTo + 3 and posyFrom == posyTo + 1:
+                return True
+            if posxFrom == posxTo + 3 and posyFrom + 1 == posyTo:
+                return True
+            if posxFrom == posxTo + 1 and posyFrom + 3 == posyTo:
+                return True
+            return False
 
+    #validate king movement    
+        if self.name == "king":
+            #validate down
+            if posxFrom == posxTo and posyFrom + 1 == posyTo:
+                return True 
+            #validate up
+            if posxFrom == posxTo and posyFrom == posyTo + 1:
+                return True 
+            #validate left
+            if posxFrom == posxTo + 1 and posyFrom == posyTo:
+                return True 
+            #validate right
+            if posxFrom + 1 == posxTo and posyFrom == posyTo:
+                return True 
+            #validate upright
+            if posxFrom + 1 == posxTo and posyFrom + 1 == posyTo:
+                return True 
+            #validate downright
+            if posxFrom + 1 == posxTo and posyFrom == posyTo + 1:
+                return True 
+            #validate upleft
+            if posxFrom == posxTo + 1 and posyFrom + 1 == posyTo:
+                return True 
+            #validate downright
+            if posxFrom== posxTo +1  and posyFrom == posyTo + 1:
+                return True 
+            return False
+    
+        return False
 
 class player:
     points = 0
@@ -183,6 +258,6 @@ computer.initializeBasedOnColor()
 chessboard = board(human,computer)
 chessboard.printBoard()
 
-bishop = piece(0,0,10,"bishop","white")
-print(bishop.validMove(5,7,7,5))
+bishop = piece(0,0,10,"king","black")
+print(bishop.validMove(3,4,3,6,"move"))
 
