@@ -1,3 +1,4 @@
+import copy
 
 class piece:
     def __init__(self,posx,posy,value,name,color):
@@ -212,7 +213,8 @@ class player:
             aux = piece(4,0,1000,"king","black")
             self.pieces.append(aux)
 class board:
-    board = [["00","00","00","00","00","00","00","00"], #0
+    def __init__(self,playerWhite,playerBlack):
+        self.board = [["00","00","00","00","00","00","00","00"], #0
              ["00","00","00","00","00","00","00","00"], #1
              ["00","00","00","00","00","00","00","00"], #2
              ["00","00","00","00","00","00","00","00"], #3
@@ -222,7 +224,7 @@ class board:
              ["00","00","00","00","00","00","00","00"]] #7
             #0,     1,   2,   3,    4,  5,    6,  7
 
-    boardOfObjects = [["00","00","00","00","00","00","00","00"], #0
+        self.boardOfObjects = [["00","00","00","00","00","00","00","00"], #0
              ["00","00","00","00","00","00","00","00"], #1
              ["00","00","00","00","00","00","00","00"], #2
              ["00","00","00","00","00","00","00","00"], #3
@@ -231,8 +233,6 @@ class board:
              ["00","00","00","00","00","00","00","00"], #6
              ["00","00","00","00","00","00","00","00"]] #7
 
-
-    def __init__(self,playerWhite,playerBlack):
         #initializes 2 board, one for printing and the other for keeping track of the pieces
         self.playerWhite = playerWhite
         self.playerBlack = playerBlack
@@ -456,7 +456,8 @@ class board:
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
                 return True
-
+    
+    #function to see if move is valid, it has first to see if any pieces are in the way and if the type of movement of the piece is valid
     def validateMove(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
         posxTo, posyTo= self.transformToPos(stringTo)
@@ -487,7 +488,8 @@ class board:
                         return True
 
         return False
-
+    
+    #function to see if move is valid, used by IA because of lack of string input AI has
     def validateMoveWithINT(self,turn,posyFrom,posxFrom,posyTo,posxTo):
         typeOf = "move"
         #validates if position from From is a piece that is the same color of the turn and the piece
@@ -515,7 +517,18 @@ class board:
                         return True
 
         return False   
-                
+
+    #function for moving the pieces, used by IA because of lack of string input AI has
+    def movePieceWithInt(self,turn,posyFrom,posxFrom,posyTo,posxTo):
+        if self.validateMoveWithINT(turn,posyFrom,posxFrom,posyTo,posxTo):
+            #rest points of player and sum to other
+            self.board[posyTo][posxTo] = self.board[posyFrom][posxFrom]
+            self.board[posyFrom][posxFrom] = "00"
+
+            self.boardOfObjects[posyTo][posxTo] = self.boardOfObjects[posyFrom][posxFrom]
+            self.boardOfObjects[posyFrom][posxFrom] = "00"
+         
+    #function for moving the pieces
     def movePiece(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
         posxTo, posyTo= self.transformToPos(stringTo)
@@ -546,11 +559,30 @@ class board:
         return whitePoints,blackPoints
 
 class hillClimbingAI:
+
     def __init__(self,boardObj):
         self.boardObj = boardObj
         self.possibleCoordinates = []
+        self.possibleStates = []
+
+    def makemove(self,arr,posyFrom,posxFrom,posyTo,posxTo):
+        arr[posyTo][posxTo] = arr[posyFrom][posxFrom]
+        arr[posyFrom][posxFrom] = "00"
+        return arr
+
+    #returns a value based on a given board, value is based the acumulative value of oppenents pieces
+    def heuristicFunction(self,arr):
+        fOfArr = 0
+        for i in range(0,len(arr)):
+            for j in arr[i]:
+                if j != "00":
+                    if j.color == "white":
+                        fOfArr += j.value                
+        return fOfArr
 
     def calculatePossibleStates(self):
+        self.possibleCoordinates = []
+        self.possibleStates = []
         for yFrom in range(0,8):
             for xFrom in range(0,8):
                 for yTo in range(0,8):
@@ -559,9 +591,84 @@ class hillClimbingAI:
                             aux = [[yFrom,xFrom],[yTo,xTo]]
                             self.possibleCoordinates.append(aux)
 
-        return self.possibleCoordinates
+        for i in range(0,len(self.possibleCoordinates)):
+            aux = []
+            for j in self.boardObj.boardOfObjects:
+                aux.append(j.copy())
+            
+            #creating new possible state by making a move with possible coordinate, I will need to calculate its heuristic
+            aux = self.makemove(aux,self.possibleCoordinates[i][0][0],self.possibleCoordinates[i][0][1],self.possibleCoordinates[i][1][0],self.possibleCoordinates[i][1][1])
+            self.possibleStates.append(aux)
+    
+    #turns coordinates in to a string
+    def fromPosToString(self,posy,posx):
+        #find first letter using posx
+        if posx == 0:
+            letter = "a"
+        if posx == 1:
+            letter = "b"
+        if posx == 2:
+            letter = "c"
+        if posx == 3:
+            letter = "d"
+        if posx == 4:
+            letter = "e"
+        if posx == 5:
+            letter = "f"
+        if posx == 6:
+            letter = "g"
+        if posx == 7:
+            letter = "h"
 
+        #find number using posy
+        if posy == 0:
+            secondletter = "8"
+        if posy == 1:
+            secondletter = "7"
+        if posy == 2:
+            secondletter = "6"
+        if posy == 3:
+            secondletter = "5"
+        if posy == 4:
+            secondletter = "4"
+        if posy == 5:
+            secondletter = "3"
+        if posy == 6:
+            secondletter = "2"
+        if posy == 7:
+            secondletter = "1"
 
+        return letter+secondletter
+
+    #Based on their heuristic function, it chooses the best state
+    def calculateBestState(self):
+        heuristics = []
+        #finds heuristic of each state
+        for i in self.possibleStates:
+            aux = self.heuristicFunction(i)
+            heuristics.append(aux)
+        
+        #finds smallest heuristic
+        mini = heuristics[0]
+        nextState = self.possibleStates[0]
+        nextCoordinates = self.possibleCoordinates[0]
+        for i in range(0,len(heuristics)):
+            if heuristics[i] <= mini:
+                mini = heuristics[i]
+                nextState = self.possibleStates[i]
+                nextCoordinates = self.possibleCoordinates[i]
+
+        posyFrom = nextCoordinates[0][0]
+        posxFrom = nextCoordinates[0][1]
+        posyTo = nextCoordinates[1][0]
+        posxTo = nextCoordinates[1][1]
+
+        stringFrom = self.fromPosToString(posyFrom,posxFrom)
+        stringTo = self.fromPosToString(posyTo,posxTo)
+
+        return stringFrom,stringTo
+
+#Program Starts
 human = player("white")
 computer = player("black")
 
@@ -577,6 +684,7 @@ winner = False
 
 AI = hillClimbingAI(chessboard)
 
+#Plays until someone loses king
 while not winner:
     stringFrom = input('\nFrom where do you want to move: ')
     stringTo = input('To where?: ')
@@ -584,13 +692,13 @@ while not winner:
     chessboard.movePiece("white",stringFrom,stringTo)
 
     #computer moves
+    print(AI.calculatePossibleStates())
+    AI.calculateBestState()
 
-    whitePoints,blackPoints = chessboard.calculatePointsOfplayers((chessboard.boardOfObjects))
+    whitePoints, blackPoints = chessboard.calculatePointsOfplayers((chessboard.boardOfObjects))
     print("white has: "+ str(whitePoints) + " points")
     print("Black has: "+ str(blackPoints) + " points")
 
-    print(AI.calculatePossibleStates())
-    print(len(AI.possibleCoordinates))
     if whitePoints <= 1000: 
         winner = True
         print("\nBlack has won the game!")
