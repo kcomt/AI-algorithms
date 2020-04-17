@@ -373,7 +373,7 @@ class board:
 
             #validate if tower will go up
             if posxFrom == posxTo and posyFrom > posyTo:
-                while posxFrom - 1> posxTo:
+                while posyFrom - 1> posyTo:
                     posyFrom -= 1
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
@@ -381,7 +381,7 @@ class board:
             
             #validate if tower will go down
             if posxFrom == posxTo and posyFrom < posyTo:
-                while posxFrom + 1< posxTo:
+                while posyFrom + 1< posyTo:
                     posyFrom += 1
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
