@@ -149,7 +149,7 @@ class piece:
             
 class player:
     def __init__(self,color):
-        self.points = 0
+        self.points = 1481
         self.pieces = []
         self.color = color
 
@@ -211,7 +211,6 @@ class player:
             #add king
             aux = piece(4,0,1000,"king","black")
             self.pieces.append(aux)
-
 class board:
     board = [["00","00","00","00","00","00","00","00"], #0
              ["00","00","00","00","00","00","00","00"], #1
@@ -235,6 +234,8 @@ class board:
 
     def __init__(self,playerWhite,playerBlack):
         #initializes 2 board, one for printing and the other for keeping track of the pieces
+        self.playerWhite = playerWhite
+        self.playerBlack = playerBlack
         for i in playerWhite.pieces:
             self.board[i.posy][i.posx] = i.name[0] + i.color[0]
             self.boardOfObjects[i.posy][i.posx] = i
@@ -486,22 +487,79 @@ class board:
                         return True
 
         return False
+
+    def validateMoveWithINT(self,turn,posyFrom,posxFrom,posyTo,posxTo):
+        typeOf = "move"
+        #validates if position from From is a piece that is the same color of the turn and the piece
+        if self.boardOfObjects[posyFrom][posxFrom] != "00" and self.boardOfObjects[posyFrom][posxFrom].color == turn:
+
+            #validates if positions of TO is empty or has a piece of different color
+            if self.boardOfObjects[posyTo][posxTo] == "00" or self.boardOfObjects[posyTo][posxTo].color != turn:
+                
+                #Checks to see if piece is pawn and is trying tp eat:
+                if turn == "white" and self.boardOfObjects[posyFrom][posxFrom].name == "pawn":
+                    if posyTo == posyFrom - 1:
+                        if posxTo == posxFrom + 1 or posxTo == posxFrom - 1:
+                            if self.boardOfObjects[posyTo][posxTo] != "00" and self.boardOfObjects[posyTo][posxTo].color == "black":
+                                typeOf = "eat"
+                if turn == "black" and self.boardOfObjects[posyFrom][posxFrom].name == "pawn":
+                    if posyTo == posyFrom + 1:
+                        if posxTo == posxFrom + 1 or posxTo == posxFrom - 1:
+                            if self.boardOfObjects[posyTo][posxTo] != "00" and self.boardOfObjects[posyTo][posxTo].color == "white":
+                                typeOf = "eat"
+
+                #validates if piece is moving in right way
+                if self.boardOfObjects[posyFrom][posxFrom].validMove(posyFrom,posxFrom,posyTo,posxTo,typeOf):
+
+                    if self.checkToSeeIfPieceInWay(turn,self.boardOfObjects[posyFrom][posxFrom].name,posyFrom,posxFrom,posyTo,posxTo,typeOf):
+                        return True
+
+        return False   
                 
     def movePiece(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
         posxTo, posyTo= self.transformToPos(stringTo)
 
         if self.validateMove(turn,stringFrom,stringTo):
+            #rest points of player and sum to other
             self.board[posyTo][posxTo] = self.board[posyFrom][posxFrom]
             self.board[posyFrom][posxFrom] = "00"
 
             self.boardOfObjects[posyTo][posxTo] = self.boardOfObjects[posyFrom][posxFrom]
             self.boardOfObjects[posyFrom][posxFrom] = "00"
-            print("\nThe new board is:")
+            print("\nYou have moved, the new board is:")
             self.printBoard()
         else:
             print("Ese movimiento no esta permitido")
 
+    def calculatePointsOfplayers(self, currentBoard):
+        whitePoints = 0
+        blackPoints = 0
+        for i in range(0,len(self.boardOfObjects)):
+            for j in self.boardOfObjects[i]:
+                if j != "00":
+                    if j.color == "white":
+                        whitePoints += j.value
+                    else:
+                        blackPoints += j.value
+        
+        return whitePoints,blackPoints
+
+class hillClimbingAI:
+    def __init__(self,boardObj):
+        self.boardObj = boardObj
+        self.possibleCoordinates = []
+
+    def calculatePossibleStates(self):
+        for yFrom in range(0,8):
+            for xFrom in range(0,8):
+                for yTo in range(0,8):
+                    for xTo in range(0,8):
+                        if self.boardObj.validateMoveWithINT("black",yFrom,xFrom,yTo,xTo):
+                            aux = [[yFrom,xFrom],[yTo,xTo]]
+                            self.possibleCoordinates.append(aux)
+
+        return self.possibleCoordinates
 
 
 human = player("white")
@@ -511,8 +569,32 @@ human.initializeBasedOnColor()
 computer.initializeBasedOnColor()
 
 chessboard = board(human,computer)
-chessboard.printBoard()
 
-chessboard.movePiece("white","h2","h4")
-chessboard.movePiece("black","g7","g5")
-chessboard.movePiece("white","h4","g5")
+print("Welcome to chess hill-climbing AI, the game is played by outputs of chessboard (e4,g1,h1)")
+print("\nThis is the chess board:")
+chessboard.printBoard()
+winner = False
+
+AI = hillClimbingAI(chessboard)
+
+while not winner:
+    stringFrom = input('\nFrom where do you want to move: ')
+    stringTo = input('To where?: ')
+
+    chessboard.movePiece("white",stringFrom,stringTo)
+
+    #computer moves
+
+    whitePoints,blackPoints = chessboard.calculatePointsOfplayers((chessboard.boardOfObjects))
+    print("white has: "+ str(whitePoints) + " points")
+    print("Black has: "+ str(blackPoints) + " points")
+
+    print(AI.calculatePossibleStates())
+    print(len(AI.possibleCoordinates))
+    if whitePoints <= 1000: 
+        winner = True
+        print("\nBlack has won the game!")
+
+    if blackPoints <= 1000: 
+        winner = True
+        print("\White has won the game!")
