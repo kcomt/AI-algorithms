@@ -540,10 +540,9 @@ class board:
 
             self.boardOfObjects[posyTo][posxTo] = self.boardOfObjects[posyFrom][posxFrom]
             self.boardOfObjects[posyFrom][posxFrom] = "00"
-            print("\nYou have moved, the new board is:")
-            self.printBoard()
+            return True
         else:
-            print("Ese movimiento no esta permitido")
+            return False
 
     def calculatePointsOfplayers(self, currentBoard):
         whitePoints = 0
@@ -689,11 +688,24 @@ while not winner:
     stringFrom = input('\nFrom where do you want to move: ')
     stringTo = input('To where?: ')
 
-    chessboard.movePiece("white",stringFrom,stringTo)
+    validanswer = chessboard.movePiece("white",stringFrom,stringTo)
+    #asks player until he gives valid answer
+    while not validanswer:
+        print("\nSorry I didnt get that, could you try that again? ")
+        stringFrom = input('From where do you want to move: ')
+        stringTo = input('To where?: ')
+        validanswer = chessboard.movePiece("white",stringFrom,stringTo)
+
+    
+    print("You have moved " + stringFrom +" to " + stringTo)
 
     #computer moves
-    print(AI.calculatePossibleStates())
-    AI.calculateBestState()
+    AI.calculatePossibleStates()
+    stringFrom, stringTo = AI.calculateBestState()
+    chessboard.movePiece("black",stringFrom,stringTo)
+
+    print("\nComputer has moved " + stringFrom + " to " + stringTo +"\n")
+    chessboard.printBoard()
 
     whitePoints, blackPoints = chessboard.calculatePointsOfplayers((chessboard.boardOfObjects))
     print("white has: "+ str(whitePoints) + " points")
