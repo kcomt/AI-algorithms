@@ -288,7 +288,7 @@ class board:
         return posx,posy
 
     #validate if any pieces in the way to where piece is moving
-    def checkToSeeIfPieceInWay(self,turn,pieceType,posyFrom,posxFrom,posyTo,posxTo):
+    def checkToSeeIfPieceInWay(self,turn,pieceType,posyFrom,posxFrom,posyTo,posxTo,typeOf):
         
         if pieceType == "horse":
             return True
@@ -297,21 +297,24 @@ class board:
             return True
 
         if pieceType == "pawn":
-            #validate for white pawn will go up
-            if posxFrom == posxTo and posyFrom > posyTo:
-                while posyFrom - 1> posyTo:
-                    posyFrom -= 1
-                    if self.board[posyFrom][posxFrom] != "00":
-                        return False
+            if typeOf == "eat":
                 return True
-            
-            #validate for black pawn will go down
-            if posxFrom == posxTo and posyFrom < posyTo:
-                while posxFrom + 1< posxTo:
-                    posyFrom += 1
-                    if self.board[posyFrom][posxFrom] != "00":
-                        return False
-                return True
+            else:
+                #validate for white pawn will go up
+                if posxFrom == posxTo and posyFrom > posyTo:
+                    while posyFrom - 1> posyTo:
+                        posyFrom -= 1
+                        if self.board[posyFrom][posxFrom] != "00":
+                            return False
+                    return True
+                
+                #validate for black pawn will go down
+                if posxFrom == posxTo and posyFrom < posyTo:
+                    while posxFrom + 1< posxTo:
+                        posyFrom += 1
+                        if self.board[posyFrom][posxFrom] != "00":
+                            return False
+                    return True
 
         if pieceType == "bishop":
             #validate if bishop will go NORTHEAST Diagnollay
@@ -456,6 +459,7 @@ class board:
     def validateMove(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
         posxTo, posyTo= self.transformToPos(stringTo)
+        typeOf = "move"
 
         #validates if position from From is a piece that is the same color of the turn and the piece
         if self.boardOfObjects[posyFrom][posxFrom] != "00" and self.boardOfObjects[posyFrom][posxFrom].color == turn:
@@ -463,10 +467,22 @@ class board:
             #validates if positions of TO is empty or has a piece of different color
             if self.boardOfObjects[posyTo][posxTo] == "00" or self.boardOfObjects[posyTo][posxTo].color != turn:
                 
-                #validates if piece is moving in right way
-                if self.boardOfObjects[posyFrom][posxFrom].validMove(posyFrom,posxFrom,posyTo,posxTo,"move"):
+                #Checks to see if piece is pawn and is trying tp eat:
+                if turn == "white" and self.boardOfObjects[posyFrom][posxFrom].name == "pawn":
+                    if posyTo == posyFrom - 1:
+                        if posxTo == posxFrom + 1 or posxTo == posxFrom - 1:
+                            if self.boardOfObjects[posyTo][posxTo] != "00" and self.boardOfObjects[posyTo][posxTo].color == "black":
+                                typeOf = "eat"
+                if turn == "black" and self.boardOfObjects[posyFrom][posxFrom].name == "pawn":
+                    if posyTo == posyFrom + 1:
+                        if posxTo == posxFrom + 1 or posxTo == posxFrom - 1:
+                            if self.boardOfObjects[posyTo][posxTo] != "00" and self.boardOfObjects[posyTo][posxTo].color == "white":
+                                typeOf = "eat"
 
-                    if self.checkToSeeIfPieceInWay(turn,self.boardOfObjects[posyFrom][posxFrom].name,posyFrom,posxFrom,posyTo,posxTo):
+                #validates if piece is moving in right way
+                if self.boardOfObjects[posyFrom][posxFrom].validMove(posyFrom,posxFrom,posyTo,posxTo,typeOf):
+
+                    if self.checkToSeeIfPieceInWay(turn,self.boardOfObjects[posyFrom][posxFrom].name,posyFrom,posxFrom,posyTo,posxTo,typeOf):
                         return True
 
         return False
@@ -498,3 +514,5 @@ chessboard = board(human,computer)
 chessboard.printBoard()
 
 chessboard.movePiece("white","h2","h4")
+chessboard.movePiece("black","g7","g5")
+chessboard.movePiece("white","h4","g5")
