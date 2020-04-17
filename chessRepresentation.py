@@ -30,8 +30,8 @@ class piece:
                         return True
             return False
 
-        #validating if position where bishop or queen wants to go is legal
-        if self.name == "bishop" or self.name == "queen":
+        #validating if position where bishop wants to go is legal
+        if self.name == "bishop":
             #validate if bishop will go NORTHWEST Diagnollay
             if posxFrom > posxTo and posyFrom > posyTo:
                 if posxFrom - posxTo == posyFrom-posyTo:
@@ -57,8 +57,8 @@ class piece:
                 else:
                     return False
             
-    #validate tower and queen towerish movement    
-        if self.name == "tower" or self.name == "queen":
+    #validate tower towerish movement    
+        if self.name == "tower":
             if posxFrom == posxTo and posyFrom != posyTo:
                 return True
             if posxFrom != posxTo and posyFrom == posyTo:
@@ -67,21 +67,21 @@ class piece:
 
     #validate horse movement    
         if self.name == "horse":
-            if posxFrom + 1 == posxTo and posyFrom + 3 == posyTo:
+            if posxFrom + 1 == posxTo and posyFrom + 2 == posyTo:
                 return True
-            if posxFrom + 3== posxTo and posyFrom + 1== posyTo:
+            if posxFrom + 2 == posxTo and posyFrom + 1== posyTo:
                 return True
-            if posxFrom + 3 == posxTo and posyFrom == posyTo + 1:
+            if posxFrom + 2 == posxTo and posyFrom == posyTo + 1:
                 return True
-            if posxFrom + 1 == posxTo and posyFrom == posyTo + 3:
+            if posxFrom + 1 == posxTo and posyFrom == posyTo + 2:
                 return True
-            if posxFrom == posxTo + 1 and posyFrom == posyTo + 3:
+            if posxFrom == posxTo + 1 and posyFrom == posyTo + 2:
                 return True
-            if posxFrom == posxTo + 3 and posyFrom == posyTo + 1:
+            if posxFrom == posxTo + 2 and posyFrom == posyTo + 1:
                 return True
-            if posxFrom == posxTo + 3 and posyFrom + 1 == posyTo:
+            if posxFrom == posxTo + 2 and posyFrom + 1 == posyTo:
                 return True
-            if posxFrom == posxTo + 1 and posyFrom + 3 == posyTo:
+            if posxFrom == posxTo + 1 and posyFrom + 2 == posyTo:
                 return True
             return False
 
@@ -115,6 +115,38 @@ class piece:
     
         return False
 
+    #validating if position where queen wants to go is legal
+        if self.name == "queen":
+            if posxFrom == posxTo and posyFrom != posyTo:
+                return True
+            if posxFrom != posxTo and posyFrom == posyTo:
+                return True
+            return False
+            #validate if queen will go NORTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom > posyTo:
+                if posxFrom - posxTo == posyFrom-posyTo:
+                    return True
+                else:
+                    return False
+            #validate if queen will go SOUTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom < posyTo:
+                if posxTo - posxFrom == posyTo-posyFrom:
+                    return True
+                else:
+                    return False
+            #validate if queen will go NORTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom > posyTo:
+                if posxTo - posxFrom == posyFrom-posyTo:
+                    return True
+                else:
+                    return False
+            #validate if queen will go SOUTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom < posyTo:
+                if posxFrom - posxTo == posyTo-posyFrom:
+                    return True
+                else:
+                    return False
+            
 class player:
     def __init__(self,color):
         self.points = 0
@@ -255,7 +287,171 @@ class board:
 
         return posx,posy
 
-    def checkToSeeIfPieceInWay(type,posyFrom,posxFrom,posyTo,posxTo):
+    #validate if any pieces in the way to where piece is moving
+    def checkToSeeIfPieceInWay(self,turn,pieceType,posyFrom,posxFrom,posyTo,posxTo):
+        
+        if pieceType == "horse":
+            return True
+
+        if pieceType == "king":
+            return True
+
+        if pieceType == "pawn":
+            #validate for white pawn will go up
+            if posxFrom == posxTo and posyFrom > posyTo:
+                while posyFrom - 1> posyTo:
+                    posyFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+            
+            #validate for black pawn will go down
+            if posxFrom == posxTo and posyFrom < posyTo:
+                while posxFrom + 1< posxTo:
+                    posyFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+        if pieceType == "bishop":
+            #validate if bishop will go NORTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom > posyTo:
+                while posyFrom > posyTo + 1 and posxFrom + 1< posxTo:
+                    posyFrom -= 1
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if bishop will go SOUTHHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom < posyTo:
+                while posyFrom + 1 < posyTo and posxFrom + 1 < posxTo:
+                    posyFrom += 1
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+            
+            #validate if bishop will go NORTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom > posyTo:
+                while posyFrom-1 > posyTo and posxFrom-1 > posxTo:
+                    posyFrom -= 1
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if bishop will go SOUTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom < posyTo:
+                while posyFrom+1 < posyTo and posxFrom-1 > posxTo:
+                    posyFrom += 1
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+        if pieceType == "tower":
+            #validate if tower will go right
+            if posxFrom < posxTo and posyFrom == posyTo:
+                while posxFrom + 1< posxTo:
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if tower will go left
+            if posxFrom > posxTo and posyFrom == posyTo:
+                while posxFrom - 1 > posxTo:
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if tower will go up
+            if posxFrom == posxTo and posyFrom > posyTo:
+                while posxFrom - 1> posxTo:
+                    posyFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+            
+            #validate if tower will go down
+            if posxFrom == posxTo and posyFrom < posyTo:
+                while posxFrom + 1< posxTo:
+                    posyFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+        if pieceType == "queen":
+
+            #validate if queen will go right
+            if posxFrom < posxTo and posyFrom == posyTo:
+                while posxFrom + 1< posxTo:
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if queen will go left
+            if posxFrom > posxTo and posyFrom == posyTo:
+                while posxFrom - 1 > posxTo:
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if queen will go up
+            if posxFrom == posxTo and posyFrom > posyTo:
+                while posxFrom - 1> posxTo:
+                    posyFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+            
+            #validate if queen will go down
+            if posxFrom == posxTo and posyFrom < posyTo:
+                while posxFrom + 1< posxTo:
+                    posyFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if queen will go NORTHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom > posyTo:
+                while posyFrom > posyTo + 1 and posxFrom + 1< posxTo:
+                    posyFrom -= 1
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if queen will go SOUTHHEAST Diagnollay
+            if posxFrom < posxTo and posyFrom < posyTo:
+                while posyFrom + 1 < posyTo and posxFrom + 1 < posxTo:
+                    posyFrom += 1
+                    posxFrom += 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+            
+            #validate if queen will go NORTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom > posyTo:
+                while posyFrom-1 > posyTo and posxFrom-1 > posxTo:
+                    posyFrom -= 1
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
+
+            #validate if queen will go SOUTHWEST Diagnollay
+            if posxFrom > posxTo and posyFrom < posyTo:
+                while posyFrom+1 < posyTo and posxFrom-1 > posxTo:
+                    posyFrom += 1
+                    posxFrom -= 1
+                    if self.board[posyFrom][posxFrom] != "00":
+                        return False
+                return True
 
     def validateMove(self,turn,stringFrom,stringTo):
         posxFrom, posyFrom = self.transformToPos(stringFrom)
@@ -263,10 +459,32 @@ class board:
 
         #validates if position from From is a piece that is the same color of the turn and the piece
         if self.boardOfObjects[posyFrom][posxFrom] != "00" and self.boardOfObjects[posyFrom][posxFrom].color == turn:
+
             #validates if positions of TO is empty or has a piece of different color
             if self.boardOfObjects[posyTo][posxTo] == "00" or self.boardOfObjects[posyTo][posxTo].color != turn:
-                print("funciona")
+                
+                #validates if piece is moving in right way
+                if self.boardOfObjects[posyFrom][posxFrom].validMove(posyFrom,posxFrom,posyTo,posxTo,"move"):
 
+                    if self.checkToSeeIfPieceInWay(turn,self.boardOfObjects[posyFrom][posxFrom].name,posyFrom,posxFrom,posyTo,posxTo):
+                        return True
+
+        return False
+                
+    def movePiece(self,turn,stringFrom,stringTo):
+        posxFrom, posyFrom = self.transformToPos(stringFrom)
+        posxTo, posyTo= self.transformToPos(stringTo)
+
+        if self.validateMove(turn,stringFrom,stringTo):
+            self.board[posyTo][posxTo] = self.board[posyFrom][posxFrom]
+            self.board[posyFrom][posxFrom] = "00"
+
+            self.boardOfObjects[posyTo][posxTo] = self.boardOfObjects[posyFrom][posxFrom]
+            self.boardOfObjects[posyFrom][posxFrom] = "00"
+            print("\nThe new board is:")
+            self.printBoard()
+        else:
+            print("Ese movimiento no esta permitido")
 
 
 
@@ -279,4 +497,4 @@ computer.initializeBasedOnColor()
 chessboard = board(human,computer)
 chessboard.printBoard()
 
-chessboard.validateMove("white","c1","c2")
+chessboard.movePiece("white","h2","h4")
