@@ -58,7 +58,7 @@ class piece:
                 else:
                     return False
             
-    #validate tower towerish movement    
+        #validate tower towerish movement    
         if self.name == "tower":
             if posxFrom == posxTo and posyFrom != posyTo:
                 return True
@@ -66,7 +66,7 @@ class piece:
                 return True
             return False
 
-    #validate horse movement    
+        #validate horse movement    
         if self.name == "horse":
             if posxFrom + 1 == posxTo and posyFrom + 2 == posyTo:
                 return True
@@ -86,7 +86,7 @@ class piece:
                 return True
             return False
 
-    #validate king movement    
+        #validate king movement    
         if self.name == "king":
             #validate down
             if posxFrom == posxTo and posyFrom + 1 == posyTo:
@@ -114,15 +114,12 @@ class piece:
                 return True 
             return False
     
-        return False
-
-    #validating if position where queen wants to go is legal
+        #validating if position where queen wants to go is legal
         if self.name == "queen":
             if posxFrom == posxTo and posyFrom != posyTo:
                 return True
             if posxFrom != posxTo and posyFrom == posyTo:
                 return True
-            return False
             #validate if queen will go NORTHWEST Diagnollay
             if posxFrom > posxTo and posyFrom > posyTo:
                 if posxFrom - posxTo == posyFrom-posyTo:
@@ -407,7 +404,7 @@ class board:
 
             #validate if queen will go up
             if posxFrom == posxTo and posyFrom > posyTo:
-                while posxFrom - 1> posxTo:
+                while posyFrom - 1> posyTo:
                     posyFrom -= 1
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
@@ -415,7 +412,7 @@ class board:
             
             #validate if queen will go down
             if posxFrom == posxTo and posyFrom < posyTo:
-                while posxFrom + 1< posxTo:
+                while posyFrom + 1< posyTo:
                     posyFrom += 1
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
@@ -456,6 +453,8 @@ class board:
                     if self.board[posyFrom][posxFrom] != "00":
                         return False
                 return True
+            
+            return False
     
     #function to see if move is valid, it has first to see if any pieces are in the way and if the type of movement of the piece is valid
     def validateMove(self,turn,stringFrom,stringTo):
@@ -468,7 +467,6 @@ class board:
 
             #validates if positions of TO is empty or has a piece of different color
             if self.boardOfObjects[posyTo][posxTo] == "00" or self.boardOfObjects[posyTo][posxTo].color != turn:
-                
                 #Checks to see if piece is pawn and is trying tp eat:
                 if turn == "white" and self.boardOfObjects[posyFrom][posxFrom].name == "pawn":
                     if posyTo == posyFrom - 1:
