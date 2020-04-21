@@ -305,7 +305,9 @@ class board:
                             return True
                         else:
                             return False
-                
+                    if posyTo == posyFrom - 1:
+                        if self.board[posyFrom-1][posxFrom] == "00":
+                            return True
                 #validate for black pawn will go down
                 if posxFrom == posxTo and posyFrom < posyTo and turn == "black":
                     if posyTo == posyFrom + 2 :
@@ -313,7 +315,9 @@ class board:
                             return True
                         else:
                             return False
-
+                    if posyTo == posyFrom + 1:
+                        if self.board[posyFrom+1][posxFrom] == "00":
+                            return True                       
         if pieceType == "bishop":
             #validate if bishop will go NORTHEAST Diagnollay
             if posxFrom < posxTo and posyFrom > posyTo:
