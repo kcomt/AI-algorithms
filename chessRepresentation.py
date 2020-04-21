@@ -299,20 +299,20 @@ class board:
                 return True
             else:
                 #validate for white pawn will go up
-                if posxFrom == posxTo and posyFrom > posyTo:
-                    while posyFrom - 1> posyTo:
-                        posyFrom -= 1
-                        if self.board[posyFrom][posxFrom] != "00":
+                if posxFrom == posxTo and posyFrom > posyTo and turn == "white":
+                    if posyTo == posyFrom - 2:
+                        if self.board[posyFrom-1][posxFrom] == "00" and self.board[posyFrom-2][posxFrom] == "00":
+                            return True
+                        else:
                             return False
-                    return True
                 
                 #validate for black pawn will go down
-                if posxFrom == posxTo and posyFrom < posyTo:
-                    while posxFrom + 1< posxTo:
-                        posyFrom += 1
-                        if self.board[posyFrom][posxFrom] != "00":
+                if posxFrom == posxTo and posyFrom < posyTo and turn == "black":
+                    if posyTo == posyFrom + 2 :
+                        if self.board[posyFrom+1][posxFrom] == "00" and self.board[posyFrom+2][posxFrom] == "00":
+                            return True
+                        else:
                             return False
-                    return True
 
         if pieceType == "bishop":
             #validate if bishop will go NORTHEAST Diagnollay
