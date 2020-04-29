@@ -1,19 +1,19 @@
 import random
 random.seed()
-board = [["00","00","00","00","00","00","00","00"], #0
-         ["00","00","00","00","00","00","00","00"], #1
-         ["00","00","00","00","00","00","00","00"], #2
-         ["00","00","00","00","00","00","00","00"], #3
-         ["00","00","00","00","00","00","00","00"], #4
-         ["00","00","00","00","00","00","00","00"], #5
-         ["00","00","00","00","00","00","00","00"], #6
-         ["00","00","00","00","00","00","00","00"]] #7
-          #0,     1,   2,   3,    4,  5,    6,  7
+board = [[" "," "," "," "," "," "," "," "], #0
+         [" "," "," "," "," "," "," "," "], #1
+         [" "," "," "," "," "," "," "," "], #2
+         [" "," "," "," "," "," "," "," "], #3
+         [" "," "," "," "," "," "," "," "], #4
+         [" "," "," "," "," "," "," "," "], #5
+         [" "," "," "," "," "," "," "," "], #6
+         [" "," "," "," "," "," "," "," "]] #7
+          #0,  1,  2,  3,  4,  5,  6,  7
 
 #Creates a random individual
 def createRandomIndividual():
     arr = []
-    numbers = [0,1,2,3,4,6,7,8]
+    numbers = [0,1,2,3,4,5,6,7]
 
     for i in range(0,8):
         aux = random.randrange(0,len(numbers))
@@ -22,4 +22,31 @@ def createRandomIndividual():
     return arr
 
 #transform individual to matrix
+def transformArrayToMatrix(board, arr):
+    auxBoard = []
+    for i in board:
+        auxBoard.append(i.copy())
+    
+    for i in range(0,len(arr)):
+        auxBoard[arr[i]][i] = "R"
+    
+    return auxBoard
 
+#Number of individuals or population
+N = 4
+def createPopulation(N):
+    individuals = []
+    for i in range(N):
+        individuals.append(createRandomIndividual())
+    return individuals
+
+def findNumberOfIndividualAttacks(arr):
+
+#given a board, it finds number of attacks on board
+def findNumberOfAttacksOfBoard(individual):
+    #find all coordinates of queens
+    
+def ideonidadFinder(population):
+
+population = createPopulation(N)
+print(population)
