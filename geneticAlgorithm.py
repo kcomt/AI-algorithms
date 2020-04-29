@@ -28,7 +28,7 @@ def transformArrayToMatrix(board, arr):
         auxBoard.append(i.copy())
     
     for i in range(0,len(arr)):
-        auxBoard[arr[i]][i] = "R"
+        auxBoard[arr[i]][i] = "Q"
     
     return auxBoard
 
@@ -40,13 +40,61 @@ def createPopulation(N):
         individuals.append(createRandomIndividual())
     return individuals
 
-def findNumberOfIndividualAttacks(arr):
+#give a coordinate of a queen, find how many other queen she attacks
+def findNumberOfIndividualAttacks(board,coordinate):
+    numberOfAtk = 0
+    posyFrom = coordinate[0]
+    poxFrom = coordinate[1]
 
+    #validate if any queen NorthEast
+    iteratory = posyFrom
+    iteratorx = poxFrom
+    while iteratory >= 0 and iteratorx < 8:
+        iteratory -= 1
+        iteratorx += 1 
+        if board[iteratory][iteratorx] == "Q":
+            numberOfAtk += 1
+    
+    #validate if any queen SouthEast
+    iteratory = posyFrom
+    iteratorx = poxFrom
+    while iteratory < 8 and iteratorx < 8:
+        iteratory += 1
+        iteratorx += 1 
+        if board[iteratory][iteratorx] == "Q":
+            numberOfAtk += 1
+
+    #validate if any queen NorthWest
+    iteratory = posyFrom
+    iteratorx = poxFrom
+    while iteratory >= 0 and iteratorx >= 0:
+        iteratory -= 1
+        iteratorx -= 1 
+        if board[iteratory][iteratorx] == "Q":
+            numberOfAtk += 1
+
+    #validate if any queen SouthWest
+    iteratory = posyFrom
+    iteratorx = poxFrom
+    while iteratory < 8 and iteratorx >= 0:
+        iteratory += 1
+        iteratorx -= 1 
+        if board[iteratory][iteratorx] == "Q":
+            numberOfAtk += 1
+
+    return numberOfAtk
 #given a board, it finds number of attacks on board
 def findNumberOfAttacksOfBoard(individual):
-    #find all coordinates of queens
+    coordinates = []
+    #find all coordinates of queens [file,column]
+    for i in range(0,len(individual)):
+        auxCoordinate = []
+        auxCoordinate.append(i)
+        auxCoordinate.append(individual[i])
+        coordinates.append(auxCoordinate)
     
-def ideonidadFinder(population):
+    for i in range(0,len(coordinates)):
 
 population = createPopulation(N)
 print(population)
+findNumberOfAttacksOfBoard(population[0])
