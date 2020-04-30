@@ -85,6 +85,8 @@ def findNumberOfIndividualAttacks(board,coordinate):
     return numberOfAtk
 #given a board, it finds number of attacks on board
 def findNumberOfAttacksOfBoard(individual):
+    currentBoard = transformArrayToMatrix(board,individual)
+    numberOfAtk = 0
     coordinates = []
     #find all coordinates of queens [file,column]
     for i in range(0,len(individual)):
@@ -94,7 +96,9 @@ def findNumberOfAttacksOfBoard(individual):
         coordinates.append(auxCoordinate)
     
     for i in range(0,len(coordinates)):
-
+        numberOfAtk += findNumberOfIndividualAttacks(board,coordinate[i])
+    
+    return numberOfAtk
 population = createPopulation(N)
 print(population)
 findNumberOfAttacksOfBoard(population[0])
